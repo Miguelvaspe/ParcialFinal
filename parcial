@@ -1,0 +1,37 @@
+CREATE OR REPLACE FUNCTION findSum (s VARCHAR2)
+ RETURN varchar2 AS
+   count1 varchar(100) := 0;
+   count2 varchar(4000) := 0;
+BEGIN
+   IF (s  NOT BETWEEN 1 AND 99999) THEN
+    RAISE_APPLICATION_ERROR(-20020,'The string is not in the range 1<=s<=99999');
+   ELSE
+   FOR i IN 1..s LOOP
+      IF (mod(i,3)=0) then  
+        count1 := i;
+        count2 := count2 + count1; 
+      END IF;
+      IF (mod(i,5)=0) then  
+        count1 := i;
+        count2 := count2 + count1; 
+      END IF;
+    END LOOP;
+   END IF;
+   RETURN count2;
+END;
+
+CREATE TABLE sums 
+(
+    base_value varchar2(5) ,
+    result VARCHAR2(4000)
+    
+);
+
+CREATE OR REPLACE TRIGGER insert_data BEFORE INSERT ON sums FOR EACH ROW 
+BEGIN
+  SELECT findSum(base_value).NEXTVAL 
+  INTO :new.result
+  FROM dual;
+END;
+
+insert into sums(base_value) values (5);
